@@ -20,7 +20,7 @@
                 </div>
                 <div class="header-stats">
                     <div class="stat">
-                        <div class="stat-value">6</div>
+                        <div class="stat-value">7</div>
                         <div class="stat-label">Games</div>
                     </div>
                     <div class="stat">
@@ -89,6 +89,16 @@
                         <div class="game-icon">🧩</div>
                         <h3 class="game-title">Simon Says</h3>
                         <p class="game-description">Follow the pattern and repeat the sequence. Each round gets longer. How far can your memory take you?</p>
+                        <div class="game-meta">
+                            <span class="difficulty medium">Medium</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game="connect4">
+                        <div class="game-icon">🔴</div>
+                        <h3 class="game-title">Connect 4</h3>
+                        <p class="game-description">Drop your discs and connect four in a row! Play against a friend or challenge the AI in this classic strategy game.</p>
                         <div class="game-meta">
                             <span class="difficulty medium">Medium</span>
                             <button class="play-btn">Play Now</button>
@@ -284,6 +294,34 @@
                     <option value="medium" selected>Medium</option>
                     <option value="hard">Hard</option>
                 </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connect 4 Game -->
+    <div id="connect4" class="game-container" style="display: none;">
+        <button class="back-btn">← Back to Hub</button>
+        <div class="game-content">
+            <h1>🔴 Connect 4</h1>
+            <div class="status" id="c4-status">Red's turn</div>
+            <div class="c4-board" id="c4-board"></div>
+            <div class="game-controls">
+                <button class="game-btn" onclick="resetConnect4()">New Game</button>
+                <button class="game-btn secondary" onclick="toggleConnect4AI()">vs AI</button>
+            </div>
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">Red</div>
+                    <div class="score-value" id="c4-scoreRed">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Draws</div>
+                    <div class="score-value" id="c4-scoreDraw">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Yellow</div>
+                    <div class="score-value" id="c4-scoreYellow">0</div>
+                </div>
             </div>
         </div>
     </div>
