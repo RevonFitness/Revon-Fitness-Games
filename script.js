@@ -27,6 +27,7 @@ function showGame(gameId) {
     if (gameId === 'tictactoe') resetTicTacToe();
     if (gameId === 'memory') newMemoryGame();
     if (gameId === 'guess') newGuessGame();
+    if (gameId === 'connect4') resetConnect4();
 }
 
 function showHub() {
@@ -532,4 +533,252 @@ function simonGameOver() {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ==================== CONNECT 4 ====================
+let c4Board = Array(6).fill(null).map(() => Array(7).fill(null));
+let c4Player = 'red';
+let c4Active = true;
+let c4VsAI = false;
+let c4Scores = { red: 0, yellow: 0, draw: 0 };
+
+function resetConnect4() {
+    c4Board = Array(6).fill(null).map(() => Array(7).fill(null));
+    c4Player = 'red';
+    c4Active = true;
+    
+    const board = document.getElementById('c4-board');
+    board.innerHTML = '';
+    
+    // Create 7 columns with 6 rows each
+    for (let col = 0; col < 7; col++) {
+        const column = document.createElement('div');
+        column.className = 'c4-column';
+        column.dataset.col = col;
+        column.onclick = () => dropC4Disc(col);
+        
+        for (let row = 0; row < 6; row++) {
+            const cell = document.createElement('div');
+            cell.className = 'c4-cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            column.appendChild(cell);
+        }
+        
+        board.appendChild(column);
+    }
+    
+    document.getElementById('c4-status').textContent = "Red's turn";
+}
+
+function dropC4Disc(col) {
+    if (!c4Active) return;
+    
+    // Find the lowest empty row in this column
+    let row = -1;
+    for (let r = 0; r < 6; r++) {
+        if (c4Board[r][col] === null) {
+            row = r;
+            break;
+        }
+    }
+    
+    if (row === -1) return; // Column is full
+    
+    makeC4Move(row, col, c4Player);
+    
+    if (c4Active && c4VsAI && c4Player === 'yellow') {
+        setTimeout(c4AIMove, 600);
+    }
+}
+
+function makeC4Move(row, col, player) {
+    c4Board[row][col] = player;
+    
+    const cell = document.querySelector(`.c4-cell[data-row="${row}"][data-col="${col}"]`);
+    cell.classList.add(player);
+    
+    if (checkC4Win(row, col, player)) {
+        document.getElementById('c4-status').textContent = `${player === 'red' ? 'Red' : 'Yellow'} wins! 🎉`;
+        c4Active = false;
+        c4Scores[player]++;
+        updateC4Scores();
+        return;
+    }
+    
+    if (c4Board.every(row => row.every(cell => cell !== null))) {
+        document.getElementById('c4-status').textContent = "It's a draw! 🤝";
+        c4Active = false;
+        c4Scores.draw++;
+        updateC4Scores();
+        return;
+    }
+    
+    c4Player = c4Player === 'red' ? 'yellow' : 'red';
+    document.getElementById('c4-status').textContent = `${c4Player === 'red' ? 'Red' : 'Yellow'}'s turn`;
+}
+
+function checkC4Win(row, col, player) {
+    // Check horizontal
+    let count = 1;
+    // Check left
+    for (let c = col - 1; c >= 0 && c4Board[row][c] === player; c--) count++;
+    // Check right
+    for (let c = col + 1; c < 7 && c4Board[row][c] === player; c++) count++;
+    if (count >= 4) {
+        highlightC4Win(row, col, player, 'horizontal');
+        return true;
+    }
+    
+    // Check vertical
+    count = 1;
+    // Check down
+    for (let r = row - 1; r >= 0 && c4Board[r][col] === player; r--) count++;
+    // Check up
+    for (let r = row + 1; r < 6 && c4Board[r][col] === player; r++) count++;
+    if (count >= 4) {
+        highlightC4Win(row, col, player, 'vertical');
+        return true;
+    }
+    
+    // Check diagonal (top-left to bottom-right)
+    count = 1;
+    for (let r = row - 1, c = col - 1; r >= 0 && c >= 0 && c4Board[r][c] === player; r--, c--) count++;
+    for (let r = row + 1, c = col + 1; r < 6 && c < 7 && c4Board[r][c] === player; r++, c++) count++;
+    if (count >= 4) {
+        highlightC4Win(row, col, player, 'diagonal1');
+        return true;
+    }
+    
+    // Check diagonal (bottom-left to top-right)
+    count = 1;
+    for (let r = row + 1, c = col - 1; r < 6 && c >= 0 && c4Board[r][c] === player; r++, c--) count++;
+    for (let r = row - 1, c = col + 1; r >= 0 && c < 7 && c4Board[r][c] === player; r--, c++) count++;
+    if (count >= 4) {
+        highlightC4Win(row, col, player, 'diagonal2');
+        return true;
+    }
+    
+    return false;
+}
+
+function highlightC4Win(row, col, player, direction) {
+    const cells = [];
+    
+    if (direction === 'horizontal') {
+        for (let c = 0; c < 7; c++) {
+            if (c4Board[row][c] === player) {
+                cells.push(document.querySelector(`.c4-cell[data-row="${row}"][data-col="${c}"]`));
+            } else if (cells.length >= 4) {
+                break;
+            } else {
+                cells.length = 0;
+            }
+        }
+    } else if (direction === 'vertical') {
+        for (let r = 0; r < 6; r++) {
+            if (c4Board[r][col] === player) {
+                cells.push(document.querySelector(`.c4-cell[data-row="${r}"][data-col="${col}"]`));
+            } else if (cells.length >= 4) {
+                break;
+            } else {
+                cells.length = 0;
+            }
+        }
+    }
+    
+    cells.slice(0, 4).forEach(cell => cell.classList.add('winning'));
+}
+
+function c4AIMove() {
+    if (!c4Active) return;
+    
+    // Simple AI: Try to win, block player, or random
+    let move = findC4WinningMove('yellow');
+    if (move === -1) move = findC4WinningMove('red');
+    if (move === -1) {
+        // Try center column first
+        if (canDropC4(3)) move = 3;
+    }
+    if (move === -1) {
+        // Random available column
+        const available = [];
+        for (let c = 0; c < 7; c++) {
+            if (canDropC4(c)) available.push(c);
+        }
+        if (available.length > 0) {
+            move = available[Math.floor(Math.random() * available.length)];
+        }
+    }
+    
+    if (move !== -1) {
+        dropC4Disc(move);
+    }
+}
+
+function findC4WinningMove(player) {
+    for (let col = 0; col < 7; col++) {
+        if (!canDropC4(col)) continue;
+        
+        // Simulate drop
+        let row = -1;
+        for (let r = 0; r < 6; r++) {
+            if (c4Board[r][col] === null) {
+                row = r;
+                break;
+            }
+        }
+        
+        c4Board[row][col] = player;
+        const wins = checkC4WinSimple(row, col, player);
+        c4Board[row][col] = null;
+        
+        if (wins) return col;
+    }
+    return -1;
+}
+
+function checkC4WinSimple(row, col, player) {
+    // Horizontal
+    let count = 1;
+    for (let c = col - 1; c >= 0 && c4Board[row][c] === player; c--) count++;
+    for (let c = col + 1; c < 7 && c4Board[row][c] === player; c++) count++;
+    if (count >= 4) return true;
+    
+    // Vertical
+    count = 1;
+    for (let r = row - 1; r >= 0 && c4Board[r][col] === player; r--) count++;
+    for (let r = row + 1; r < 6 && c4Board[r][col] === player; r++) count++;
+    if (count >= 4) return true;
+    
+    // Diagonal 1
+    count = 1;
+    for (let r = row - 1, c = col - 1; r >= 0 && c >= 0 && c4Board[r][c] === player; r--, c--) count++;
+    for (let r = row + 1, c = col + 1; r < 6 && c < 7 && c4Board[r][c] === player; r++, c++) count++;
+    if (count >= 4) return true;
+    
+    // Diagonal 2
+    count = 1;
+    for (let r = row + 1, c = col - 1; r < 6 && c >= 0 && c4Board[r][c] === player; r++, c--) count++;
+    for (let r = row - 1, c = col + 1; r >= 0 && c < 7 && c4Board[r][c] === player; r--, c++) count++;
+    if (count >= 4) return true;
+    
+    return false;
+}
+
+function canDropC4(col) {
+    return c4Board[5][col] === null;
+}
+
+function toggleConnect4AI() {
+    c4VsAI = !c4VsAI;
+    const btn = event.target;
+    btn.textContent = c4VsAI ? 'vs Player' : 'vs AI';
+    resetConnect4();
+}
+
+function updateC4Scores() {
+    document.getElementById('c4-scoreRed').textContent = c4Scores.red;
+    document.getElementById('c4-scoreYellow').textContent = c4Scores.yellow;
+    document.getElementById('c4-scoreDraw').textContent = c4Scores.draw;
 }
