@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub - Your Gaming Portal</title>
+    <style>
+        /* ==================== STYLES.CSS ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #22d3ee;
+            --success: #10b981;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 30px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Games Grid */
+        .games-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .game-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .game-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .game-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--surface-light);
+        }
+
+        .difficulty {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .difficulty.easy { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .difficulty.medium { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .difficulty.hard { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .play-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Coming Soon Badge */
+        .coming-soon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--secondary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--surface-light);
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .header-stats { gap: 20px; }
+            .stat-value { font-size: 1.4rem; }
+            .games-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🎮</div>
+                    <div>
+                        <h1>GameHub</h1>
+                        <p class="tagline">Your Ultimate Gaming Portal</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Games</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">∞</div>
+                        <div class="stat-label">Fun</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="games-section">
+                <h2 class="section-title">Classic Games</h2>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-icon">⭕</div>
+                        <h3 class="game-title">Tic Tac Toe</h3>
+                        <p class="game-description">Challenge yourself or play against a friend in this timeless strategy game. Get three in a row to win!</p>
+                        <div class="game-meta">
+                            <span class="difficulty easy">Easy</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">🪙</div>
+                        <h3 class="game-title">Flip a Coin</h3>
+                        <p class="game-description">Can't decide? Let fate choose for you. A simple coin flip to settle any debate or make quick decisions.</p>
+                        <div class="game-meta">
+                            <span class="difficulty easy">Easy</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">🎲</div>
+                        <h3 class="game-title">Roll the Dice</h3>
+                        <p class="game-description">Roll one or multiple dice for board games, decision making, or just for fun. Supports D6, D12, D20 and more!</p>
+                        <div class="game-meta">
+                            <span class="difficulty easy">Easy</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">🎯</div>
+                        <h3 class="game-title">Number Guessing</h3>
+                        <p class="game-description">Test your intuition! Guess the secret number between 1 and 100. How many tries will it take you?</p>
+                        <div class="game-meta">
+                            <span class="difficulty easy">Easy</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">🃏</div>
+                        <h3 class="game-title">Memory Match</h3>
+                        <p class="game-description">Train your brain with this classic memory card game. Flip cards and find matching pairs to clear the board.</p>
+                        <div class="game-meta">
+                            <span class="difficulty medium">Medium</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">🧩</div>
+                        <h3 class="game-title">Simon Says</h3>
+                        <p class="game-description">Follow the pattern and repeat the sequence. Each round gets longer. How far can your memory take you?</p>
+                        <div class="game-meta">
+                            <span class="difficulty medium">Medium</span>
+                            <button class="play-btn">Play Now</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="games-section">
+                <h2 class="section-title">Coming Soon</h2>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <span class="coming-soon">Soon</span>
+                        <div class="game-icon">🐍</div>
+                        <h3 class="game-title">Snake</h3>
+                        <p class="game-description">Guide the snake to eat food and grow longer. Don't hit the walls or your own tail in this arcade classic!</p>
+                        <div class="game-meta">
+                            <span class="difficulty medium">Medium</span>
+                            <button class="play-btn">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <span class="coming-soon">Soon</span>
+                        <div class="game-icon">🎮</div>
+                        <h3 class="game-title">Tetris</h3>
+                        <p class="game-description">Arrange falling blocks to create complete lines. Speed increases as you progress. A true puzzle classic!</p>
+                        <div class="game-meta">
+                            <span class="difficulty hard">Hard</span>
+                            <button class="play-btn">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <span class="coming-soon">Soon</span>
+                        <div class="game-icon">🎰</div>
+                        <h3 class="game-title">Slot Machine</h3>
+                        <p class="game-description">Try your luck with the spinning reels. Match symbols to win big in this exciting casino-style game!</p>
+                        <div class="game-meta">
+                            <span class="difficulty easy">Easy</span>
+                            <button class="play-btn">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <span class="coming-soon">Soon</span>
+                        <div class="game-icon">🏓</div>
+                        <h3 class="game-title">Pong</h3>
+                        <p class="game-description">The original arcade game! Bounce the ball past your opponent's paddle to score. First to 10 wins!</p>
+                        <div class="game-meta">
+                            <span class="difficulty medium">Medium</span>
+                            <button class="play-btn">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <span class="coming-soon">Soon</span>
+                        <div class="game-icon">💣</div>
+                        <h3 class="game-title">Minesweeper</h3>
+                        <p class="game-description">Clear the board without hitting any mines. Use logic and deduction to reveal safe tiles and flag dangers.</p>
+                        <div class="game-meta">
+                            <span class="difficulty hard">Hard</span>
+                            <button class="play-btn">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <div class="game-card">
+                        <span class="coming-soon">Soon</span>
+                        <div class="game-icon">🎪</div>
+                        <h3 class="game-title">Whack-a-Mole</h3>
+                        <p class="game-description">Click the moles as they pop up! Fast reflexes are key in this arcade favorite. Beat your high score!</p>
+                        <div class="game-meta">
+                            <span class="difficulty easy">Easy</span>
+                            <button class="play-btn">Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>GameHub</strong> - Where Fun Meets Strategy</p>
+            <p>© 2024 GameHub. All games coming soon!</p>
+        </footer>
+    </div>
+
+    <script>        
+        // Add click handlers to all play buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const playButtons = document.querySelectorAll('.play-btn');
+            const gameCards = document.querySelectorAll('.game-card');
+
+            playButtons.forEach((button, index) => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const gameTitle = button.closest('.game-card').querySelector('.game-title').textContent;
+                    
+                    if (button.textContent === 'Coming Soon') {
+                        alert(`${gameTitle} is coming soon! Stay tuned for updates.`);
+                    } else {
+                        alert(`${gameTitle} will be available soon! Game functionality to be implemented.`);
+                    }
+                });
+            });
+
+            // Add hover effect sound feedback (visual only for now)
+            gameCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('play-btn')) return;
+                    
+                    const gameTitle = card.querySelector('.game-title').textContent;
+                    const playBtn = card.querySelector('.play-btn');
+                    playBtn.click();
+                });
+            });
+
+            // Animate stats on load
+            animateStats();
+        });
+
+        function animateStats() {
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                if (stat.textContent !== '∞') {
+                    const finalValue = parseInt(stat.textContent);
+                    let currentValue = 0;
+                    const increment = finalValue / 20;
+                    
+                    const timer = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= finalValue) {
+                            stat.textContent = finalValue;
+                            clearInterval(timer);
+                        } else {
+                            stat.textContent = Math.floor(currentValue);
+                        }
+                    }, 50);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
